@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exzap — Client Cabinet Demo (Fake)</title>
+  <meta name="description" content="A clickable demo website showing a client cabinet/account for an auto parts e-commerce brand. Fake links and data." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --brand:#1d4ed8;
+      --brand2:#0ea5e9;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --shadow: 0 10px 30px rgba(2,6,23,.08);
+      --radius: 18px;
+      --radius2: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(29,78,216,.15), transparent 60%),
+                  radial-gradient(900px 500px at 80% 0%, rgba(14,165,233,.16), transparent 55%),
+                  var(--bg);
+    }
+    a{color:inherit}
+
+    /* Top bar */
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter: blur(10px);
+      background: rgba(245,247,251,.76);
+      border-bottom:1px solid var(--line);
+    }
+    .topbar-inner{
+      max-width:1200px; margin:0 auto; padding:14px 18px;
+      display:flex; gap:14px; align-items:center;
+    }
+    .logo{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800; letter-spacing:.2px;
+    }
+    .logo-badge{
+      width:36px; height:36px; border-radius:12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      display:grid; place-items:center;
+      box-shadow: 0 12px 24px rgba(29,78,216,.18);
+      color:#fff;
+    }
+    .logo span{font-size:18px}
+    .search{
+      flex:1;
+      display:flex;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 14px;
+      gap:10px;
+      align-items:center;
+      box-shadow: 0 6px 18px rgba(2,6,23,.05);
+      min-width: 180px;
+    }
+    .search input{
+      width:100%; border:0; outline:0; font-size:14px;
+    }
+    .chip{
+      display:flex; align-items:center; gap:8px;
+      padding:9px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .actions{display:flex; gap:8px; align-items:center}
+    .iconbtn{
+      width:40px; height:40px; border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      display:grid; place-items:center;
+      box-shadow: 0 6px 18px rgba(2,6,23,.05);
+      cursor:pointer;
+      position:relative;
+    }
+    .badge{
+      position:absolute; top:-6px; right:-6px;
+      background: var(--brand);
+      color:#fff;
+      font-size:11px;
+      border-radius:999px;
+      padding:2px 6px;
+      border:2px solid rgba(245,247,251,.9);
+    }
+
+    /* Layout */
+    .wrap{max-width:1200px; margin:0 auto; padding:18px;}
+    .grid{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      position:sticky; top:84px;
+      background: rgba(255,255,255,.7);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:14px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .profileCard{
+      border-radius: 16px;
+      padding:14px;
+      background: linear-gradient(135deg, rgba(29,78,216,.12), rgba(14,165,233,.10));
+      border:1px solid rgba(29,78,216,.18);
+    }
+    .profileRow{display:flex; gap:12px; align-items:center}
+    .avatar{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#fff;
+      display:grid; place-items:center;
+      font-weight:700;
+    }
+    .name{font-weight:800}
+    .sub{color:var(--muted); font-size:13px}
+    .points{
+      margin-top:10px;
+      display:flex; justify-content:space-between; align-items:center;
+      background:#fff;
+      border:1px solid var(--line);
+      padding:10px 12px;
+      border-radius:14px;
+    }
+    .pill{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(29,78,216,.25);
+      background: rgba(29,78,216,.08);
+      color: var(--brand);
+      font-weight:700;
+    }
+    .nav{margin-top:12px; display:flex; flex-direction:column; gap:6px}
+    .nav a{
+      text-decoration:none;
+      padding:10px 10px;
+      border-radius:14px;
+      display:flex; gap:10px; align-items:center;
+      color: var(--text);
+      border:1px solid transparent;
+    }
+    .nav a:hover{background:#fff; border-color: var(--line)}
+    .nav a.active{
+      background:#fff;
+      border-color: rgba(29,78,216,.25);
+      box-shadow: 0 10px 20px rgba(29,78,216,.08);
+    }
+    .nav small{color:var(--muted)}
+    .nav .right{margin-left:auto; color:var(--muted); font-size:12px}
+
+    /* Main */
+    .main{
+      min-height: calc(100vh - 140px);
+      background: rgba(255,255,255,.65);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .mainHeader{
+      padding:18px 18px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex; justify-content:space-between; gap:12px; align-items:flex-start;
+      background: linear-gradient(135deg, rgba(15,23,42,.02), rgba(29,78,216,.05));
+    }
+    .hTitle{margin:0; font-size:20px}
+    .hHint{margin:6px 0 0; color:var(--muted); font-size:13px}
+    .btnRow{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+      display:inline-flex; gap:8px; align-items:center;
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#fff;
+      border-color: transparent;
+      box-shadow: 0 12px 22px rgba(29,78,216,.18);
+    }
+    .content{padding:16px 18px 22px}
+
+    /* Cards & tables */
+    .cards{display:grid; grid-template-columns: repeat(12, 1fr); gap:14px}
+    .card{
+      grid-column: span 6;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:14px;
+      box-shadow: 0 10px 22px rgba(2,6,23,.05);
+    }
+    .card.small{grid-column: span 4}
+    .card.wide{grid-column: span 12}
+    .card h3{margin:0 0 10px; font-size:14px}
+    .muted{color:var(--muted); font-size:13px}
+
+    .list{display:flex; flex-direction:column; gap:10px}
+    .row{
+      display:flex; gap:12px; align-items:center;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff, #fff);
+    }
+    .row .grow{flex:1}
+    .row .title{font-weight:800}
+    .row .meta{color:var(--muted); font-size:12px; margin-top:3px}
+    .tag{
+      font-size:12px; font-weight:800;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid;
+      background:#fff;
+      white-space:nowrap;
+    }
+    .tag.ok{border-color: rgba(22,163,74,.25); color: var(--ok); background: rgba(22,163,74,.06)}
+    .tag.warn{border-color: rgba(245,158,11,.28); color: var(--warn); background: rgba(245,158,11,.08)}
+    .tag.bad{border-color: rgba(239,68,68,.28); color: var(--bad); background: rgba(239,68,68,.08)}
+
+    .kpi{display:flex; gap:12px; align-items:center}
+    .kpi .num{font-size:28px; font-weight:900}
+    .kpi .unit{font-weight:800; color:var(--brand)}
+
+    .form{
+      display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    }
+    .field{display:flex; flex-direction:column; gap:6px}
+    label{font-size:12px; color:var(--muted); font-weight:700}
+    input, select, textarea{
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      outline:none;
+      font-size:14px;
+      background:#fff;
+    }
+    textarea{min-height:92px; resize:vertical}
+    .help{font-size:12px; color:var(--muted)}
+
+    .table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+    }
+    .table th, .table td{padding:12px 12px; text-align:left; font-size:13px}
+    .table th{color:var(--muted); font-weight:800; border-bottom:1px solid var(--line); background: rgba(2,6,23,.02)}
+    .table tr:not(:last-child) td{border-bottom:1px solid var(--line)}
+
+    /* Auth modal */
+    .overlay{
+      position:fixed; inset:0; z-index:50;
+      background: rgba(2,6,23,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .modal{
+      width:min(720px, 100%);
+      background:#fff;
+      border-radius: 22px;
+      overflow:hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.4);
+    }
+    .modalHead{
+      padding:16px 18px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid var(--line);
+      background: linear-gradient(135deg, rgba(29,78,216,.10), rgba(14,165,233,.08));
+    }
+    .modalHead h2{margin:0; font-size:16px}
+    .close{
+      width:40px; height:40px; border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .modalBody{padding:16px 18px 18px}
+    .steps{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    .step{
+      border:1px solid var(--line);
+      border-radius: 18px;
+      padding:14px;
+      background:#fff;
+    }
+    .step h3{margin:0 0 8px; font-size:14px}
+    .checkline{display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--muted)}
+    .checkline input{margin-top:3px}
+
+    /* Footer */
+    .foot{
+      max-width:1200px; margin: 16px auto 26px; padding:0 18px;
+      color: var(--muted);
+      font-size:12px;
+      display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      .sidebar{position:relative; top:0}
+      .card{grid-column: span 12}
+      .card.small{grid-column: span 12}
+      .form{grid-template-columns: 1fr}
+      .steps{grid-template-columns: 1fr}
+    }
+
+    /* Tiny icons */
+    .ic{width:18px; height:18px; display:inline-block}
+    .ic svg{width:18px; height:18px; display:block}
+    .kbd{font-family:var(--mono); font-size:12px; border:1px solid var(--line); border-bottom-width:2px; padding:2px 6px; border-radius:8px; background:#fff; color:var(--muted)}
+
+    /* Hide pages */
+    .page{display:none}
+    .page.active{display:block}
+
+    /* Toast */
+    .toast{
+      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+      background:#0b1220;
+      color:#fff;
+      border-radius: 999px;
+      padding:10px 14px;
+      font-size:13px;
+      display:none;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      z-index: 60;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo" role="button" tabindex="0" onclick="go('#/dashboard')" title="Fake home">
+        <div class="logo-badge">ex</div>
+        <span>exzap</span>
+      </div>
+
+      <div class="search" title="Fake search">
+        <span class="ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        </span>
+        <input id="q" placeholder="Search parts, VIN, brands… (fake)" />
+        <span class="kbd">/</span>
+      </div>
+
+      <div class="chip" title="Fake location">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-4.5 7-11a7 7 0 0 0-14 0c0 6.5 7 11 7 11z"/><circle cx="12" cy="11" r="2"/></svg></span>
+        Tashkent
+      </div>
+
+      <div class="actions">
+        <button class="iconbtn" onclick="toast('Favorites opened (fake)'); go('#/favorites')" title="Favorites">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.4-9.5-8.3C.8 9.7 2.5 6.5 6 6.5c1.8 0 3.1 1 4 2.2.9-1.2 2.2-2.2 4-2.2 3.5 0 5.2 3.2 3.5 6.2C19 16.6 12 21 12 21z"/></svg></span>
+          <span class="badge" id="favBadge">3</span>
+        </button>
+        <button class="iconbtn" onclick="toast('Orders opened (fake)'); go('#/orders')" title="Orders">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8H8"/><path d="M21 12H8"/><path d="M21 16H8"/><path d="M5 8h.01"/><path d="M5 12h.01"/><path d="M5 16h.01"/></svg></span>
+        </button>
+        <button class="iconbtn" onclick="toast('Cart opened (fake)')" title="Cart">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6l-2-3H1"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg></span>
+          <span class="badge" id="cartBadge">2</span>
+        </button>
+        <button class="btn primary" onclick="openAuth()" id="authBtn">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          Sign in
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="profileCard">
+          <div class="profileRow">
+            <div class="avatar" id="avatar">A</div>
+            <div>
+              <div class="name" id="profileName">Guest</div>
+              <div class="sub" id="profilePhone">+998 (__) ___ __ __</div>
+            </div>
+          </div>
+          <div class="points">
+            <div>
+              <div style="font-weight:900" id="points">450</div>
+              <div class="sub">Bonus points</div>
+            </div>
+            <div class="pill" id="tier">SILVER</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Client cabinet navigation">
+          <a href="#/dashboard" data-route="dashboard"><span class="ic">🏠</span> Dashboard <span class="right">Asosiylari</span></a>
+          <a href="#/garage" data-route="garage"><span class="ic">🚗</span> Garage <span class="right">Garaj</span></a>
+          <a href="#/favorites" data-route="favorites"><span class="ic">❤️</span> Favorites <span class="right">Sevimlilar</span></a>
+          <a href="#/orders" data-route="orders"><span class="ic">📦</span> Orders <span class="right">Buyurtmalar</span></a>
+          <a href="#/searches" data-route="searches"><span class="ic">🔎</span> My Searches <span class="right">Qidiruvlar</span></a>
+          <a href="#/bonus" data-route="bonus"><span class="ic">🪙</span> Bonus CLUB <span class="right">Ballar</span></a>
+          <a href="#/settings" data-route="settings"><span class="ic">⚙️</span> Settings <small>(fake)</small></a>
+        </nav>
+
+        <div style="margin-top:12px" class="muted">
+          Tip: use <span class="kbd">/</span> to focus search.
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <section class="main">
+
+        <!-- DASHBOARD -->
+        <div class="page" id="page-dashboard">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">Dashboard</h1>
+              <p class="hHint">A quick overview: orders, garage, shortcuts, and loyalty.</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="go('#/orders')">📦 Track order</button>
+              <button class="btn" onclick="go('#/garage')">🚗 Find parts by VIN</button>
+              <button class="btn primary" onclick="toast('Quick order created (fake)')">⚡ Quick order</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="cards">
+              <div class="card">
+                <h3>Active orders</h3>
+                <div class="list" id="activeOrders"></div>
+              </div>
+              <div class="card">
+                <h3>My vehicle</h3>
+                <div class="row">
+                  <div style="font-size:28px">🚘</div>
+                  <div class="grow">
+                    <div class="title" id="vehicleTitle">Chevrolet Lacetti 2012</div>
+                    <div class="meta">VIN: <span style="font-family:var(--mono)" id="vehicleVin">KLA••••••••••••2356</span></div>
+                  </div>
+                  <button class="btn" onclick="go('#/garage')">Open Garage</button>
+                </div>
+                <div style="margin-top:10px" class="muted">Personalized recommendations are based on your Garage.</div>
+              </div>
+
+              <div class="card small">
+                <h3>Bonus CLUB</h3>
+                <div class="kpi">
+                  <div class="num" id="kpiPoints">450</div>
+                  <div>
+                    <div class="unit">points</div>
+                    <div class="muted">Tier: <b id="kpiTier">SILVER</b></div>
+                  </div>
+                </div>
+                <div style="margin-top:10px" class="muted">Next tier at <b>1200</b> points.</div>
+                <div style="margin-top:12px">
+                  <button class="btn primary" onclick="go('#/bonus')">Open Bonus CLUB</button>
+                </div>
+              </div>
+
+              <div class="card small">
+                <h3>Saved searches</h3>
+                <div class="list" id="savedSearches"></div>
+              </div>
+
+              <div class="card wide">
+                <h3>Recommended for you</h3>
+                <div class="muted">These are sample cards (fake data) to demonstrate cabinet UI.</div>
+                <div style="margin-top:12px" class="cards">
+                  <div class="card small" style="grid-column: span 4;">
+                    <h3>Oil filter</h3>
+                    <div class="muted">Mann W712/83 • In stock</div>
+                    <div style="margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:space-between">
+                      <div style="font-weight:900">80,000 UZS</div>
+                      <button class="btn primary" onclick="addToCart()">Add</button>
+                    </div>
+                  </div>
+                  <div class="card small" style="grid-column: span 4;">
+                    <h3>Brake pads</h3>
+                    <div class="muted">Brembo • Delivery 1–2 days</div>
+                    <div style="margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:space-between">
+                      <div style="font-weight:900">210,000 UZS</div>
+                      <button class="btn primary" onclick="addToCart()">Add</button>
+                    </div>
+                  </div>
+                  <div class="card small" style="grid-column: span 4;">
+                    <h3>Engine oil</h3>
+                    <div class="muted">Castrol EDGE 5W-30 4L • Promo</div>
+                    <div style="margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:space-between">
+                      <div style="font-weight:900">295,000 UZS</div>
+                      <button class="btn primary" onclick="addToCart()">Add</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- GARAGE -->
+        <div class="page" id="page-garage">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">Garage</h1>
+              <p class="hHint">Store vehicles and search parts by VIN or selection.</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="toast('VIN search started (fake)')">🔎 VIN search</button>
+              <button class="btn primary" onclick="toast('Vehicle saved (fake)')">💾 Save</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="cards">
+              <div class="card">
+                <h3>Selected vehicle</h3>
+                <div class="row">
+                  <div style="font-size:30px">🚗</div>
+                  <div class="grow">
+                    <div class="title" id="garageVehicle">Chevrolet Lacetti 2012</div>
+                    <div class="meta">VIN: <span style="font-family:var(--mono)" id="garageVin">KLA••••••••••••2356</span></div>
+                  </div>
+                  <span class="tag ok">Active</span>
+                </div>
+                <div style="margin-top:12px" class="muted">Add multiple cars and switch between them.</div>
+              </div>
+
+              <div class="card">
+                <h3>Add / Edit vehicle</h3>
+                <div class="form">
+                  <div class="field">
+                    <label>VIN or Frame Number</label>
+                    <input id="vinInput" placeholder="Enter VIN (fake)" value="KLAFA8E8B8B712356" />
+                    <div class="help">We’ll mask VIN on screen for privacy.</div>
+                  </div>
+                  <div class="field">
+                    <label>Nickname</label>
+                    <input id="nickInput" placeholder="e.g., My Lacetti" value="My Lacetti" />
+                  </div>
+                  <div class="field">
+                    <label>Brand</label>
+                    <select id="brandSel">
+                      <option>Chevrolet</option>
+                      <option>Toyota</option>
+                      <option>Hyundai</option>
+                      <option>Kia</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Model</label>
+                    <select id="modelSel">
+                      <option>Lacetti</option>
+                      <option>Nexia</option>
+                      <option>Cobalt</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Year</label>
+                    <select id="yearSel">
+                      <option>2012</option>
+                      <option>2013</option>
+                      <option>2014</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Engine / Fuel</label>
+                    <select id="engineSel">
+                      <option>1.6 бензин</option>
+                      <option>1.5 бензин</option>
+                      <option>1.8 бензин</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+                  <button class="btn primary" onclick="saveVehicle()">Save vehicle</button>
+                  <button class="btn" onclick="toast('Parts list opened (fake)')">See recommended parts</button>
+                </div>
+              </div>
+
+              <div class="card wide">
+                <h3>Recommended maintenance</h3>
+                <table class="table" aria-label="Maintenance recommendations">
+                  <thead>
+                    <tr><th>Category</th><th>Recommendation</th><th>Next action</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Oil change</td><td>5W-30 synthetic</td><td><button class="btn" onclick="toast('Oil added to cart (fake)')">Add bundle</button></td></tr>
+                    <tr><td>Filters</td><td>Oil + Air + Cabin filter set</td><td><button class="btn" onclick="toast('Filters added (fake)')">Add bundle</button></td></tr>
+                    <tr><td>Brakes</td><td>Front pads for Lacetti</td><td><button class="btn" onclick="toast('Pads added (fake)')">Add</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAVORITES -->
+        <div class="page" id="page-favorites">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">Favorites</h1>
+              <p class="hHint">Save items to buy later and add to cart in one click.</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="toast('Sorted (fake)')">↕️ Sort</button>
+              <button class="btn primary" onclick="addAllFavs()">🛒 Add all to cart</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="list" id="favList"></div>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="page" id="page-orders">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">Orders</h1>
+              <p class="hHint">Track delivery status, view details, and reorder quickly.</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="toast('Invoice downloaded (fake)')">🧾 Download invoice</button>
+              <button class="btn primary" onclick="toast('Support opened (fake)')">💬 Support</button>
+            </div>
+          </div>
+          <div class="content">
+            <table class="table" aria-label="Orders table">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="ordersTable"></tbody>
+            </table>
+
+            <div style="margin-top:14px" class="card">
+              <h3>Selected order details (fake)</h3>
+              <div class="muted">Click “Details” on an order to load it here.</div>
+              <div id="orderDetails" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEARCHES -->
+        <div class="page" id="page-searches">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">My Searches</h1>
+              <p class="hHint">Repeat searches, pin favorites, and set fake alerts.</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="toast('Alert created (fake)')">🔔 Create alert</button>
+              <button class="btn primary" onclick="toast('Search repeated (fake)')">▶️ Run saved search</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="cards">
+              <div class="card">
+                <h3>Saved</h3>
+                <div class="list" id="savedList"></div>
+              </div>
+              <div class="card">
+                <h3>Recent</h3>
+                <div class="list" id="recentList"></div>
+              </div>
+              <div class="card wide">
+                <h3>Search notes</h3>
+                <textarea placeholder="Write notes about parts, OEM codes, suppliers… (fake)"></textarea>
+                <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
+                  <button class="btn primary" onclick="toast('Notes saved (fake)')">Save notes</button>
+                  <button class="btn" onclick="toast('Shared (fake)')">Share</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BONUS -->
+        <div class="page" id="page-bonus">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">Bonus CLUB</h1>
+              <p class="hHint">Points, tier progression, and bonuses history.</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="toast('Promo applied (fake)')">🏷️ Apply promo</button>
+              <button class="btn primary" onclick="toast('Points used at checkout (fake)')">🪙 Use points</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="cards">
+              <div class="card">
+                <h3>Your status</h3>
+                <div class="kpi">
+                  <div class="num" id="bonusPoints">450</div>
+                  <div>
+                    <div class="unit">points</div>
+                    <div class="muted">Tier: <b id="bonusTier">SILVER</b></div>
+                  </div>
+                </div>
+                <div style="margin-top:12px" class="row">
+                  <div class="grow">
+                    <div class="title">Progress to GOLD</div>
+                    <div class="meta">Need <b id="needPoints">750</b> more points</div>
+                  </div>
+                  <span class="tag warn">Goal: 1200</span>
+                </div>
+              </div>
+
+              <div class="card">
+                <h3>How to earn</h3>
+                <div class="list">
+                  <div class="row"><div class="grow"><div class="title">Buy parts</div><div class="meta">Get points for each order (fake rule)</div></div><span class="tag ok">+1%</span></div>
+                  <div class="row"><div class="grow"><div class="title">Leave a review</div><div class="meta">Help others choose (fake)</div></div><span class="tag ok">+50</span></div>
+                  <div class="row"><div class="grow"><div class="title">Invite a friend</div><div class="meta">Referral bonus (fake)</div></div><span class="tag ok">+200</span></div>
+                </div>
+              </div>
+
+              <div class="card wide">
+                <h3>Points history</h3>
+                <table class="table" aria-label="Bonus history">
+                  <thead><tr><th>Date</th><th>Action</th><th>Points</th></tr></thead>
+                  <tbody>
+                    <tr><td>12.03.2024</td><td>Order #45678 delivered</td><td><span class="tag ok">+150</span></td></tr>
+                    <tr><td>10.03.2024</td><td>Promo activation</td><td><span class="tag ok">+50</span></td></tr>
+                    <tr><td>05.03.2024</td><td>Used points at checkout</td><td><span class="tag bad">-80</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="page" id="page-settings">
+          <div class="mainHeader">
+            <div>
+              <h1 class="hTitle">Settings</h1>
+              <p class="hHint">Profile details, delivery info, and preferences (fake).</p>
+            </div>
+            <div class="btnRow">
+              <button class="btn" onclick="openAuth()">🔐 Re-auth</button>
+              <button class="btn primary" onclick="toast('Changes saved (fake)')">Save changes</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="cards">
+              <div class="card">
+                <h3>Profile</h3>
+                <div class="form">
+                  <div class="field">
+                    <label>Name</label>
+                    <input id="setName" value="Ali" />
+                  </div>
+                  <div class="field">
+                    <label>Phone</label>
+                    <input id="setPhone" value="+998 90 123 45 67" />
+                  </div>
+                  <div class="field">
+                    <label>City</label>
+                    <select>
+                      <option>Tashkent</option>
+                      <option>Samarkand</option>
+                      <option>Bukhara</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Preferred delivery</label>
+                    <select>
+                      <option>Courier</option>
+                      <option>Pickup point</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Addresses</h3>
+                <div class="list">
+                  <div class="row"><div class="grow"><div class="title">Home</div><div class="meta">Tashkent, Chilonzor, Street 12 (fake)</div></div><button class="btn">Edit</button></div>
+                  <div class="row"><div class="grow"><div class="title">Work</div><div class="meta">Tashkent, Mirabad, Office 5 (fake)</div></div><button class="btn">Edit</button></div>
+                </div>
+              </div>
+              <div class="card wide">
+                <h3>Security</h3>
+                <div class="row">
+                  <div class="grow">
+                    <div class="title">Log out everywhere</div>
+                    <div class="meta">This is a demo — no real sessions.</div>
+                  </div>
+                  <button class="btn" onclick="logout()">Log out</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div>Demo cabinet for presentation use. All data is fake.</div>
+    <div>Keyboard: <span class="kbd">/</span> search • <span class="kbd">Esc</span> close modal</div>
+  </footer>
+
+  <!-- AUTH MODAL -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Sign in modal">
+    <div class="modal">
+      <div class="modalHead">
+        <h2>Sign in / Register (demo)</h2>
+        <button class="close" onclick="closeAuth()" aria-label="Close">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="steps">
+          <div class="step">
+            <h3>1) Phone number</h3>
+            <div class="field">
+              <label>Phone</label>
+              <input id="phone" placeholder="+998 90 123 45 67" value="+998 90 123 45 67" />
+            </div>
+            <div style="margin-top:10px" class="help">We’ll send an SMS code (fake).</div>
+            <div style="margin-top:10px">
+              <button class="btn primary" onclick="sendCode()">Send code</button>
+            </div>
+          </div>
+          <div class="step">
+            <h3>2) SMS confirmation</h3>
+            <div class="field">
+              <label>Code</label>
+              <input id="code" placeholder="123456" value="123456" />
+              <div class="help">Use any 6 digits in this demo.</div>
+            </div>
+            <div class="field" style="margin-top:10px">
+              <label>Name (for registration)</label>
+              <input id="regName" placeholder="Your name" value="Ali" />
+            </div>
+            <div style="margin-top:10px" class="checkline">
+              <input type="checkbox" id="agree1" checked>
+              <div>I agree with the public offer (fake)</div>
+            </div>
+            <div class="checkline" style="margin-top:8px">
+              <input type="checkbox" id="agree2" checked>
+              <div>I agree with personal data processing (fake)</div>
+            </div>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+              <button class="btn primary" onclick="confirmLogin()">Continue</button>
+              <button class="btn" onclick="toast('Resent code (fake)')">Resend</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px" class="muted">
+          This is a front-end only prototype. No backend, no real SMS.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // --- Fake state ---
+    const state = {
+      user: { name: 'Guest', phone: '+998 (__) ___ __ __', loggedIn: false },
+      points: 450,
+      tier: 'SILVER',
+      vehicle: { brand:'Chevrolet', model:'Lacetti', year:'2012', vin:'KLAFA8E8B8B712356' },
+      favorites: [
+        { id: 1, name: 'Castrol EDGE 5W-30 4L', price: 295000, status: 'In stock' },
+        { id: 2, name: 'Mann Oil Filter W712/83', price: 80000, status: 'In stock' },
+        { id: 3, name: 'Brembo Brake Pads (Lacetti)', price: 210000, status: 'Delivery 1–2 days' },
+      ],
+      orders: [
+        { id: 45678, date: '12.03.2024', total: 325000, status: 'Shipped', items: ['Oil filter', 'Cabin filter'] },
+        { id: 45432, date: '10.03.2024', total: 210000, status: 'Confirmed', items: ['Brake pads'] },
+        { id: 44910, date: '05.03.2024', total: 295000, status: 'Delivered', items: ['Engine oil 5W-30 4L'] },
+      ],
+      savedSearches: [
+        { q: 'Brembo brake pads Lacetti', filter: 'Garage: Lacetti', pinned: true },
+        { q: '5W-30 engine oil', filter: 'Promo', pinned: true },
+      ],
+      recentSearches: [
+        { q: 'Wheel bearing Lacetti', filter: 'In stock' },
+        { q: 'Spark plugs', filter: 'Top rated' },
+        { q: 'Cabin filter Lacetti', filter: 'Fast delivery' },
+      ],
+      cartCount: 2,
+    };
+
+    // --- Helpers ---
+    const fmt = n => new Intl.NumberFormat('en-US').format(n) + ' UZS';
+    const maskVIN = vin => vin.slice(0,3) + '••••••••••••' + vin.slice(-4);
+    function $(id){ return document.getElementById(id); }
+
+    // --- Toast ---
+    let toastTimer;
+    function toast(msg){
+      const t = $('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> t.style.display='none', 1900);
+    }
+
+    // --- Routing ---
+    function go(hash){ location.hash = hash; }
+    function route(){
+      const r = (location.hash || '#/dashboard').replace('#/','');
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      const page = document.getElementById('page-' + r);
+      (page || $('page-dashboard')).classList.add('active');
+
+      document.querySelectorAll('.nav a').forEach(a=>{
+        a.classList.toggle('active', a.dataset.route === r);
+      });
+    }
+
+    // --- Render ---
+    function render(){
+      // Profile
+      $('profileName').textContent = state.user.name;
+      $('profilePhone').textContent = state.user.phone;
+      $('avatar').textContent = (state.user.name || 'G').trim().slice(0,1).toUpperCase();
+      $('points').textContent = state.points;
+      $('tier').textContent = state.tier;
+
+      $('kpiPoints').textContent = state.points;
+      $('kpiTier').textContent = state.tier;
+      $('bonusPoints').textContent = state.points;
+      $('bonusTier').textContent = state.tier;
+      $('needPoints').textContent = Math.max(0, 1200 - state.points);
+
+      // Vehicle
+      const v = state.vehicle;
+      const vTitle = `${v.brand} ${v.model} ${v.year}`;
+      $('vehicleTitle').textContent = vTitle;
+      $('garageVehicle').textContent = vTitle;
+      $('vehicleVin').textContent = maskVIN(v.vin);
+      $('garageVin').textContent = maskVIN(v.vin);
+
+      // Badges
+      $('favBadge').textContent = state.favorites.length;
+      $('cartBadge').textContent = state.cartCount;
+
+      // Auth button
+      $('authBtn').textContent = state.user.loggedIn ? 'Account' : 'Sign in';
+
+      // Active orders dashboard
+      const active = state.orders.slice(0,2);
+      $('activeOrders').innerHTML = active.map(o=>{
+        const tagClass = o.status==='Delivered' ? 'ok' : (o.status==='Shipped' ? 'warn' : 'warn');
+        return `
+          <div class="row">
+            <div class="grow">
+              <div class="title">Order #${o.id}</div>
+              <div class="meta">${o.date} • ${fmt(o.total)}</div>
+            </div>
+            <span class="tag ${tagClass}">${o.status}</span>
+            <button class="btn" onclick="showOrder(${o.id}); go('#/orders')">Details</button>
+          </div>
+        `;
+      }).join('');
+
+      // Saved searches dashboard
+      $('savedSearches').innerHTML = state.savedSearches.map(s=>`
+        <div class="row">
+          <div class="grow">
+            <div class="title">${escapeHtml(s.q)}</div>
+            <div class="meta">${escapeHtml(s.filter)}</div>
+          </div>
+          <button class="btn" onclick="toast('Search repeated (fake)')">Run</button>
+        </div>
+      `).join('');
+
+      // Favorites page
+      $('favList').innerHTML = state.favorites.map(f=>`
+        <div class="row">
+          <div style="font-size:26px">🧩</div>
+          <div class="grow">
+            <div class="title">${escapeHtml(f.name)}</div>
+            <div class="meta">${escapeHtml(f.status)} • ${fmt(f.price)}</div>
+          </div>
+          <button class="btn primary" onclick="addToCart()">Add to cart</button>
+          <button class="btn" onclick="removeFav(${f.id})">Remove</button>
+        </div>
+      `).join('');
+
+      // Orders table
+      $('ordersTable').innerHTML = state.orders.map(o=>{
+        const tagClass = o.status==='Delivered' ? 'ok' : (o.status==='Shipped' ? 'warn' : 'warn');
+        return `
+          <tr>
+            <td><b>#${o.id}</b></td>
+            <td>${o.date}</td>
+            <td><b>${fmt(o.total)}</b></td>
+            <td><span class="tag ${tagClass}">${o.status}</span></td>
+            <td><button class="btn" onclick="showOrder(${o.id})">Details</button></td>
+          </tr>
+        `;
+      }).join('');
+
+      // Searches page
+      $('savedList').innerHTML = state.savedSearches.map(s=>`
+        <div class="row">
+          <div class="grow">
+            <div class="title">${escapeHtml(s.q)}</div>
+            <div class="meta">${escapeHtml(s.filter)} • Pinned</div>
+          </div>
+          <button class="btn" onclick="toast('Unpinned (fake)')">Unpin</button>
+          <button class="btn primary" onclick="toast('Search repeated (fake)')">Run</button>
+        </div>
+      `).join('');
+      $('recentList').innerHTML = state.recentSearches.map(s=>`
+        <div class="row">
+          <div class="grow">
+            <div class="title">${escapeHtml(s.q)}</div>
+            <div class="meta">${escapeHtml(s.filter)}</div>
+          </div>
+          <button class="btn" onclick="toast('Saved (fake)')">Save</button>
+        </div>
+      `).join('');
+
+      // Settings default values
+      $('setName').value = state.user.loggedIn ? state.user.name : 'Ali';
+      $('setPhone').value = state.user.loggedIn ? state.user.phone : '+998 90 123 45 67';
+
+      // Garage inputs
+      $('vinInput').value = state.vehicle.vin;
+      $('nickInput').value = 'My ' + state.vehicle.model;
+      $('brandSel').value = state.vehicle.brand;
+      $('modelSel').value = state.vehicle.model;
+      $('yearSel').value = state.vehicle.year;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, c=>({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    // --- Orders details ---
+    function showOrder(id){
+      const o = state.orders.find(x=>x.id===id);
+      if(!o) return;
+      const steps = ['Created','Confirmed','Packed','Shipped','Delivered'];
+      const idx = Math.max(0, steps.indexOf(o.status));
+      const line = steps.map((s,i)=>{
+        const cls = i<=idx ? 'ok' : 'warn';
+        return `<span class="tag ${cls}" style="margin-right:8px">${s}</span>`;
+      }).join('');
+
+      $('orderDetails').innerHTML = `
+        <div class="row">
+          <div class="grow">
+            <div class="title">Order #${o.id}</div>
+            <div class="meta">${o.date} • ${fmt(o.total)} • Delivery: Tashkent (fake)</div>
+            <div style="margin-top:10px">${line}</div>
+            <div style="margin-top:10px" class="muted"><b>Items:</b> ${o.items.map(escapeHtml).join(', ')}</div>
+          </div>
+          <button class="btn primary" onclick="toast('Reordered (fake)')">Buy again</button>
+        </div>
+      `;
+      toast(`Loaded order #${id}`);
+    }
+
+    // --- Favorites ---
+    function removeFav(id){
+      state.favorites = state.favorites.filter(f=>f.id!==id);
+      render();
+      toast('Removed from favorites');
+    }
+    function addAllFavs(){
+      state.cartCount += state.favorites.length;
+      render();
+      toast('All favorites added to cart (fake)');
+    }
+
+    // --- Cart ---
+    function addToCart(){
+      state.cartCount += 1;
+      render();
+      toast('Added to cart (fake)');
+    }
+
+    // --- Garage ---
+    function saveVehicle(){
+      const vin = $('vinInput').value.trim() || 'UNKNOWNVIN000000000';
+      const brand = $('brandSel').value;
+      const model = $('modelSel').value;
+      const year  = $('yearSel').value;
+      state.vehicle = { ...state.vehicle, vin, brand, model, year };
+      render();
+      toast('Vehicle saved (fake)');
+    }
+
+    // --- Auth modal ---
+    function openAuth(){ $('overlay').style.display='flex'; $('phone').focus(); }
+    function closeAuth(){ $('overlay').style.display='none'; }
+    function sendCode(){ toast('SMS code sent (fake)'); $('code').focus(); }
+    function confirmLogin(){
+      const ok1 = $('agree1').checked;
+      const ok2 = $('agree2').checked;
+      if(!ok1 || !ok2){ toast('Please accept agreements (demo)'); return; }
+      const name = $('regName').value.trim() || 'User';
+      const phone = $('phone').value.trim() || '+998 00 000 00 00';
+      state.user = { name, phone, loggedIn: true };
+      closeAuth();
+      render();
+      toast('Signed in (fake)');
+    }
+    function logout(){
+      state.user = { name:'Guest', phone:'+998 (__) ___ __ __', loggedIn:false };
+      render();
+      toast('Logged out (fake)');
+      go('#/dashboard');
+    }
+
+    // --- Keyboard shortcuts ---
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){
+        e.preventDefault();
+        $('q').focus();
+      }
+      if(e.key === 'Escape') closeAuth();
+    });
+
+    // --- Init ---
+    window.addEventListener('hashchange', route);
+    route();
+    render();
+
+    // Start with a sample order selected
+    showOrder(45678);
+
+    // Clicking outside modal closes it
+    $('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay') closeAuth(); });
+  </script>
+</body>
+</html>
